@@ -49,6 +49,8 @@ for release in jetbrains_repo.get_releases():
                 "download_url",
                 find_linux_release_asset(release.assets).browser_download_url,
             )
+            # Hack to try and get the version information into the appimage, since appimage-bash doesn't do it for some reason
+            os.environ["VERSION"] = latest_product_version
 
         set_output(
             "needs_update",
