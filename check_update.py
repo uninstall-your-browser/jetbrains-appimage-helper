@@ -1,5 +1,6 @@
 import os
 from typing import Iterable
+from pathlib import Path
 
 from github import Auth, Github
 from github.GitReleaseAsset import GitReleaseAsset
@@ -49,6 +50,13 @@ for release in jetbrains_repo.get_releases():
                 "download_url",
                 find_linux_release_asset(release.assets).browser_download_url,
             )
+
+            # Hacks to put the version information into the desktop file
+            app_desktop_file = Path("app.desktop")
+            if app_desktop_file.exists():
+                with open(app_desktop_file, "w+") as f:
+                    f.write(f"X-AppImage-Version={latest_product_version}")
+                    print("Wrote appimage version to desktop file")
 
         set_output(
             "needs_update",
