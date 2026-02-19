@@ -55,8 +55,9 @@ for release in jetbrains_repo.get_releases():
             app_desktop_file = Path("app.desktop")
             if app_desktop_file.exists():
                 with open(app_desktop_file, "w+") as f:
-                    f.write(f"X-AppImage-Version={latest_product_version}")
+                    f.write(f"X-AppImage-Version={latest_product_version}\n")
                     print("Wrote appimage version to desktop file")
+                print(app_desktop_file.read_text())
 
         set_output(
             "needs_update",
