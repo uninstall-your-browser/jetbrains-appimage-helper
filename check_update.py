@@ -1,5 +1,5 @@
 import os
-from typing import Iterable
+from collections.abc import Iterable
 from pathlib import Path
 
 from github import Auth, Github
@@ -34,7 +34,16 @@ def find_linux_release_asset(assets: Iterable[GitReleaseAsset]) -> GitReleaseAss
 
     raise RuntimeError("couldn't find any suitable release asset")
 
-sorted_releases = sorted((x for x in jetbrains_repo.get_releases()[:10] if x.name.startswith(product_release_prefix)), key=lambda x: x.name, reverse=True)
+
+sorted_releases = sorted(
+    (
+        x
+        for x in jetbrains_repo.get_releases()[:10]
+        if x.name.startswith(product_release_prefix)
+    ),
+    key=lambda x: x.name,
+    reverse=True,
+)
 release = sorted_releases[0]
 release_name = release.name
 
