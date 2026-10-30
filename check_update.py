@@ -34,37 +34,32 @@ def find_linux_release_asset(assets: Iterable[GitReleaseAsset]) -> GitReleaseAss
 
     raise RuntimeError("couldn't find any suitable release asset")
 
+sorted_releases = sorted(x.name for x in jetbrains_repo.get_releases()[:10] if x.startswith(product_release_prefix))
+release_name = next(sorted_releases)
 
-for release in jetbrains_repo.get_releases():
-    release_name = release.tag_name
+print(f"Inspecting release {release_name}")
+latest_product_version = release.tag_name.lstrip(product_release_prefix)
+needs_update = latest_product_version > latest_custom_release
 
-    if release_name.startswith(product_release_prefix):
-        print(f"Inspecting release {release_name}")
-        latest_product_version = release.tag_name.lstrip(product_release_prefix)
-        needs_update = latest_product_version > latest_custom_release
+print(f"{latest_custom_release=} {latest_product_version=}, {needs_update=}")
 
-        print(f"{latest_custom_release=} {latest_product_version=}, {needs_update=}")
+if needs_update:
+    set_output(
+        "download_url",
+        find_linux_release_asset(release.assets).browser_download_url,
+    )
 
-        if needs_update:
-            set_output(
-                "download_url",
-                find_linux_release_asset(release.assets).browser_download_url,
-            )
+    # Hacks to put the version information into the desktop file
+    app_desktop_file = Path("app.desktop")
+    if app_desktop_file.exists():
+        with open(app_desktop_file, "a") as f:
+            f.write(f"\nX-AppImage-Version={latest_product_version}\n")
+            print("Wrote appimage version to desktop file")
+        print(app_desktop_file.read_text())
 
-            # Hacks to put the version information into the desktop file
-            app_desktop_file = Path("app.desktop")
-            if app_desktop_file.exists():
-                with open(app_desktop_file, "a") as f:
-                    f.write(f"\nX-AppImage-Version={latest_product_version}\n")
-                    print("Wrote appimage version to desktop file")
-                print(app_desktop_file.read_text())
-
-        set_output(
-            "needs_update",
-            str(needs_update).lower(),
-        )
-        break
-    else:
-        print(f"Ignored release {release_name}")
+set_output(
+    "needs_update",
+    str(needs_update).lower(),
+)
 else:
     raise RuntimeError("WHERE ARE THE RELEASES????")
