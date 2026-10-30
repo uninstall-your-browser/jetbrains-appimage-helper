@@ -45,9 +45,8 @@ sorted_releases = sorted(
     reverse=True,
 )
 release = sorted_releases[0]
-release_name = release.name
 
-print(f"Inspecting release {release_name}")
+print(f"Inspecting release {release.name}")
 latest_product_version = release.tag_name.lstrip(product_release_prefix)
 needs_update = latest_product_version > latest_custom_release
 
