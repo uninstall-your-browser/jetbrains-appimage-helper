@@ -61,5 +61,3 @@ set_output(
     "needs_update",
     str(needs_update).lower(),
 )
-else:
-    raise RuntimeError("WHERE ARE THE RELEASES????")
