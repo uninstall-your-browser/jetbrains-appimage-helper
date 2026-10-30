@@ -34,8 +34,9 @@ def find_linux_release_asset(assets: Iterable[GitReleaseAsset]) -> GitReleaseAss
 
     raise RuntimeError("couldn't find any suitable release asset")
 
-sorted_releases = sorted(x.name for x in jetbrains_repo.get_releases()[:10] if x.name.startswith(product_release_prefix))
-release_name = sorted_releases[0]
+sorted_releases = sorted(x for x in jetbrains_repo.get_releases()[:10] if x.name.startswith(product_release_prefix), key=lambda x: x.name)
+release = sorted_releases[0]
+release_name = release.name
 
 print(f"Inspecting release {release_name}")
 latest_product_version = release.tag_name.lstrip(product_release_prefix)
